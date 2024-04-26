@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat App</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    .chat-container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+    .message {
+        background-color: #e9e9e9;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        
+    }
+    .message.sent {
+        background-color: #DCF8C6;
+        text-align: right;
+        max-width: 100%;
+        word-wrap: break-word;
+        display: inline-block;
+    }
+    .message.received {
+        background-color: #FFFFFF;
+        text-align: left;
+        max-width: 100%;
+        word-wrap: break-word;
+        display: inline-block;
+    }
+    @keyframes typing {
+        from { width: 0 }
+        to { width: 100% }
+    }
+
+    .typing {
+        border-right: 2px solid;
+        white-space: nowrap;
+        overflow: hidden;
+        animation: typing 2s steps(40, end), blink-caret .75s step-end infinite;
+    }
+
+    @keyframes blink-caret {
+        from, to { border-color: transparent }
+        50% { border-color: black }
+    }
+</style>
+</head>
+<body>
+    <div class="chat-container">
+        <div id="responseContainer"></div>
+        <form id="chatForm">
+            <input type="text" id="textInput" placeholder="Your text">
+            <button type="submit">Send</button>
+        </form>
+    </div>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    document.getElementById('chatForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        let text = document.getElementById('textInput').value;
+        const reqText = text;
+        // Ganti spasi dengan tanda '+'
+        text = text.replace(/\s/g, '+');
+        // Encode text
+        // text = encodeURIComponent(text);
+        axios.get(`https://chat.ai.cneko.org/?t=${text}&p=${text}`)
+            .then(response => {
+                const chatContainer = document.querySelector('.chat-container');
+                // Menambahkan pesan yang dikirim
+                const sentMessage = document.createElement('div');
+                sentMessage.className = 'message sent';
+                sentMessage.innerHTML = `<p>${reqText}</p>`;
+                chatContainer.appendChild(sentMessage);
+                
+                // Menambahkan pesan yang diterima
+                const receivedMessage = document.createElement('div');
+                receivedMessage.className = 'message received typing';
+                receivedMessage.innerHTML = `<p>${response.data.response}</p>`;
+                chatContainer.appendChild(receivedMessage);
+            })
+            .catch(error => console.error('Error:', error));
+    });
+</script>
+</body>
+</html>
